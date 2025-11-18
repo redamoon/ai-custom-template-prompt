@@ -83,7 +83,7 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-          npm publish --registry=https://registry.npmjs.org
+          npm publish --registry=https://registry.npmjs.org --access public
           mv package.json.backup package.json
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
