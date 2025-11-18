@@ -87,7 +87,6 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           npm config set registry https://registry.npmjs.org/
           npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm config set //registry.npmjs.org/:always-auth true
           echo "npm user: $(npm whoami)"
           npm publish --access public --registry=https://registry.npmjs.org/
           mv package.json.backup package.json
