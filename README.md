@@ -93,6 +93,9 @@ npx ai-custom-template-prompt add cursor-rules
 - `cursor-manual-rules` - Manualルール（@manual-rulesで明示的に指定）
 - `cursor-test-rules` - テストファイル用ルール（自動適用）
 - `cursor-api-rules` - API関連コード用ルール（自動適用）
+- `cursor-backend-rules` - バックエンド用ルール（ネスト: `backend/.cursor/rules/`）
+- `cursor-frontend-rules` - フロントエンド用ルール（ネスト: `frontend/.cursor/rules/`）
+- `cursor-server-rules` - サーバー用ルール（ネスト: `backend/server/.cursor/rules/`）
 - `cursor-prompts` - Cursor用プロンプトファイル
 - `claude-hooks` - Claude用カスタムフック
 - `agents` - Agents設定ファイル
@@ -121,11 +124,22 @@ npx ai-custom-template-prompt doctor
 
 ## テンプレートの配置先
 
+### プロジェクトルートのルール
+
 - `.cursor/rules.mdc` - Cursor基本ルール（常に適用）
 - `.cursor/rules/manual-rules.mdc` - Manualルール（@manual-rulesで指定）
 - `.cursor/rules/test-rules.mdc` - テストファイル用ルール（自動適用）
 - `.cursor/rules/api-rules.mdc` - API関連コード用ルール（自動適用）
 - `.cursor/prompts.mdc` - Cursorプロンプト
+
+### ネストされたルール（ディレクトリ別）
+
+- `backend/.cursor/rules/backend-rules.mdc` - バックエンド用ルール
+- `frontend/.cursor/rules/frontend-rules.mdc` - フロントエンド用ルール
+- `backend/server/.cursor/rules/server-rules.mdc` - サーバー用ルール
+
+### その他のテンプレート
+
 - `ai/claude/custom-hooks.md` - Claudeフック
 - `ai/agents/Agents.md` - Agents設定
 
@@ -135,6 +149,18 @@ npx ai-custom-template-prompt doctor
 - **Manualルール** (`manual-rules.mdc`): `@manual-rules` で明示的に指定した場合のみ適用
 - **テストルール** (`test-rules.mdc`): `globs: ["**/*.test.ts"]` でテストファイルに自動適用
 - **APIルール** (`api-rules.mdc`): `globs: ["**/api/**/*"]` でAPIディレクトリに自動適用
+- **バックエンドルール** (`backend-rules.mdc`): `globs: ["backend/**/*"]` でバックエンドディレクトリに自動適用
+- **フロントエンドルール** (`frontend-rules.mdc`): `globs: ["frontend/**/*"]` でフロントエンドディレクトリに自動適用
+- **サーバールール** (`server-rules.mdc`): `globs: ["backend/server/**/*"]` でサーバーディレクトリに自動適用
+
+### ネストされたルールの動作
+
+Cursorは、ファイルが参照されたときに、そのファイルが含まれるディレクトリの`.cursor/rules`ディレクトリ内のルールを自動的に適用します。
+
+例：
+- `backend/api/users.ts` を開くと → `backend/.cursor/rules/backend-rules.mdc` が適用される
+- `frontend/components/Button.tsx` を開くと → `frontend/.cursor/rules/frontend-rules.mdc` が適用される
+- `backend/server/index.ts` を開くと → `backend/server/.cursor/rules/server-rules.mdc` が適用される
 
 ### ビルド
 

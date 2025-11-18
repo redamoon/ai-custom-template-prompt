@@ -3,6 +3,9 @@ export type TemplateKey =
   | "cursor-manual-rules"
   | "cursor-test-rules"
   | "cursor-api-rules"
+  | "cursor-backend-rules"
+  | "cursor-frontend-rules"
+  | "cursor-server-rules"
   | "cursor-prompts"
   | "claude-hooks"
   | "agents";
@@ -26,6 +29,18 @@ export const TEMPLATE_MAP: Record<
   "cursor-api-rules": {
     from: "cursor/api-rules.mdc",
     to: ".cursor/rules/api-rules.mdc",
+  },
+  "cursor-backend-rules": {
+    from: "cursor/backend-rules.mdc",
+    to: "backend/.cursor/rules/backend-rules.mdc",
+  },
+  "cursor-frontend-rules": {
+    from: "cursor/frontend-rules.mdc",
+    to: "frontend/.cursor/rules/frontend-rules.mdc",
+  },
+  "cursor-server-rules": {
+    from: "cursor/server-rules.mdc",
+    to: "backend/server/.cursor/rules/server-rules.mdc",
   },
   "cursor-prompts": {
     from: "cursor/prompts.mdc",
