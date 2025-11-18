@@ -65,7 +65,7 @@ jobs:
 
       - name: Publish to GitHub Packages (Private)
         run: |
-          echo "@your-org:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "@redamoon:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
           npm publish --registry=https://npm.pkg.github.com
         env:

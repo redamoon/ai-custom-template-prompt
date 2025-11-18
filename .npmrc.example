@@ -2,7 +2,7 @@
 # このファイルを .npmrc にコピーして、PERSONAL_ACCESS_TOKEN を実際のトークンに置き換えてください
 
 # GitHub Packages用のレジストリ設定
-@your-org:registry=https://npm.pkg.github.com
+@redamoon:registry=https://npm.pkg.github.com
 
 # 認証トークン（GitHub Personal Access Token）
 # 権限: repo, write:packages, read:packages

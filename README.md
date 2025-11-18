@@ -12,10 +12,10 @@ AI開発ツール（Cursor、Claude、Agents）向けのカスタムテンプレ
 # .npmrcファイルを作成（.npmrc.exampleを参考）
 # GitHub Personal Access Tokenが必要（repo, write:packages, read:packages権限）
 
-npm install @your-org/ai-custom-template-prompt --registry=https://npm.pkg.github.com
+npm install @redamoon/ai-custom-template-prompt --registry=https://npm.pkg.github.com
 
 # または、グローバルインストール
-npm install -g @your-org/ai-custom-template-prompt --registry=https://npm.pkg.github.com
+npm install -g @redamoon/ai-custom-template-prompt --registry=https://npm.pkg.github.com
 ```
 
 ### Public npmからインストール
@@ -32,7 +32,7 @@ npm install ai-custom-template-prompt
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/your-org/ai-custom-template-prompt.git
+git clone https://github.com/redamoon/ai-custom-template-prompt.git
 cd ai-custom-template-prompt
 
 # 依存関係のインストール
@@ -163,7 +163,7 @@ pnpm build
 ### 1. GitHub Packages（Private）
 
 - **対象**: チーム内メンバーのみ
-- **パッケージ名**: `@your-org/ai-custom-template-prompt`
+- **パッケージ名**: `@redamoon/ai-custom-template-prompt`
 - **レジストリ**: `https://npm.pkg.github.com`
 - **認証**: GitHub Personal Access Token（PAT）が必要
 
@@ -175,13 +175,13 @@ pnpm build
 
 2. `.npmrc`ファイルを作成
    ```ini
-   @your-org:registry=https://npm.pkg.github.com
+   @redamoon:registry=https://npm.pkg.github.com
    //npm.pkg.github.com/:_authToken=YOUR_PERSONAL_ACCESS_TOKEN
    ```
 
 3. インストール
    ```bash
-   npm install @your-org/ai-custom-template-prompt --registry=https://npm.pkg.github.com
+   npm install @redamoon/ai-custom-template-prompt --registry=https://npm.pkg.github.com
    ```
 
 ### 2. Public npm
