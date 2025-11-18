@@ -82,11 +82,14 @@ jobs:
             delete pkg.publishConfig;
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+          # .npmrcをクリアしてからPublic npm用に設定
+          rm -f .npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           npm config set registry https://registry.npmjs.org/
           npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm whoami
-          npm publish --access public
+          npm config set //registry.npmjs.org/:always-auth true
+          echo "npm user: $(npm whoami)"
+          npm publish --access public --registry=https://registry.npmjs.org/
           mv package.json.backup package.json
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
