@@ -4,7 +4,38 @@ import { TEMPLATE_MAP, TemplateKey } from "./config.js";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const templateRoot = path.join(__dirname, "..", "..", "templates");
+
+// テンプレートディレクトリのパスを動的に解決
+// 開発モード: src/core -> プロジェクトルート -> templates
+// ビルド後: dist/core -> プロジェクトルート -> templates
+function getTemplateRoot() {
+  // 現在のファイルの場所からプロジェクトルートを推定
+  let currentDir = __dirname;
+  
+  // dist または src ディレクトリを探す
+  while (currentDir !== path.dirname(currentDir)) {
+    const templatesPath = path.join(currentDir, "templates");
+    if (fs.existsSync(templatesPath)) {
+      return templatesPath;
+    }
+    // プロジェクトルートを探す（package.jsonがある場所）
+    const packageJsonPath = path.join(currentDir, "package.json");
+    if (fs.existsSync(packageJsonPath)) {
+      return path.join(currentDir, "templates");
+    }
+    currentDir = path.dirname(currentDir);
+  }
+  
+  // フォールバック: 相対パスで探す
+  const fallbackPath = path.join(__dirname, "..", "..", "templates");
+  if (fs.existsSync(fallbackPath)) {
+    return fallbackPath;
+  }
+  
+  throw new Error("テンプレートディレクトリが見つかりません");
+}
+
+const templateRoot = getTemplateRoot();
 
 export async function generate(name: TemplateKey | "all") {
   if (name === "all") {
