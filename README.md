@@ -89,7 +89,10 @@ npx ai-custom-template-prompt add cursor-rules
 ```
 
 **利用可能なテンプレート名:**
-- `cursor-rules` - Cursor用ルールファイル
+- `cursor-rules` - Cursor用基本ルールファイル（常に適用）
+- `cursor-manual-rules` - Manualルール（@manual-rulesで明示的に指定）
+- `cursor-test-rules` - テストファイル用ルール（自動適用）
+- `cursor-api-rules` - API関連コード用ルール（自動適用）
 - `cursor-prompts` - Cursor用プロンプトファイル
 - `claude-hooks` - Claude用カスタムフック
 - `agents` - Agents設定ファイル
@@ -118,10 +121,20 @@ npx ai-custom-template-prompt doctor
 
 ## テンプレートの配置先
 
-- `.cursor/rules.mdc` - Cursorルール
+- `.cursor/rules.mdc` - Cursor基本ルール（常に適用）
+- `.cursor/rules/manual-rules.mdc` - Manualルール（@manual-rulesで指定）
+- `.cursor/rules/test-rules.mdc` - テストファイル用ルール（自動適用）
+- `.cursor/rules/api-rules.mdc` - API関連コード用ルール（自動適用）
 - `.cursor/prompts.mdc` - Cursorプロンプト
 - `ai/claude/custom-hooks.md` - Claudeフック
 - `ai/agents/Agents.md` - Agents設定
+
+### ルールの適用方法
+
+- **基本ルール** (`rules.mdc`): `alwaysApply: true` で常に適用
+- **Manualルール** (`manual-rules.mdc`): `@manual-rules` で明示的に指定した場合のみ適用
+- **テストルール** (`test-rules.mdc`): `globs: ["**/*.test.ts"]` でテストファイルに自動適用
+- **APIルール** (`api-rules.mdc`): `globs: ["**/api/**/*"]` でAPIディレクトリに自動適用
 
 ### ビルド
 

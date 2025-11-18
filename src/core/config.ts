@@ -1,5 +1,8 @@
 export type TemplateKey =
   | "cursor-rules"
+  | "cursor-manual-rules"
+  | "cursor-test-rules"
+  | "cursor-api-rules"
   | "cursor-prompts"
   | "claude-hooks"
   | "agents";
@@ -11,6 +14,18 @@ export const TEMPLATE_MAP: Record<
   "cursor-rules": {
     from: "cursor/rules.mdc",
     to: ".cursor/rules.mdc",
+  },
+  "cursor-manual-rules": {
+    from: "cursor/manual-rules.mdc",
+    to: ".cursor/rules/manual-rules.mdc",
+  },
+  "cursor-test-rules": {
+    from: "cursor/test-rules.mdc",
+    to: ".cursor/rules/test-rules.mdc",
+  },
+  "cursor-api-rules": {
+    from: "cursor/api-rules.mdc",
+    to: ".cursor/rules/api-rules.mdc",
   },
   "cursor-prompts": {
     from: "cursor/prompts.mdc",
