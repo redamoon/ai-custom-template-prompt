@@ -2,6 +2,16 @@
 
 AI開発ツール（Cursor、Claude、Agents）向けのカスタムテンプレート管理CLIツールです。
 
+## クイックスタート
+
+```bash
+# npxで直接実行（インストール不要）
+npx ai-custom-template-prompt init
+npx ai-custom-template-prompt list
+npx ai-custom-template-prompt add cursor-rules
+npx ai-custom-template-prompt doctor
+```
+
 ## インストール
 
 ### GitHub Packages（Private）からインストール
@@ -47,10 +57,23 @@ pnpm install
 
 ## 使用方法
 
+### コマンド一覧
+
+| コマンド | 説明 |
+|---------|------|
+| `init` | 初回セットアップ（対話式でテンプレートを選択） |
+| `add <template>` | 指定テンプレートを追加 |
+| `list` | 利用可能なテンプレート一覧を表示 |
+| `doctor` | 設定チェック（テンプレートファイルの配置状況を確認） |
+
 ### 初回セットアップ（対話式）
 
 ```bash
-pnpm dev init
+# インストール済みの場合
+ai-custom-template-prompt init
+
+# または npxで実行
+npx ai-custom-template-prompt init
 ```
 
 対話式でテンプレートを選択してセットアップできます。
@@ -58,10 +81,14 @@ pnpm dev init
 ### テンプレートを追加
 
 ```bash
-pnpm dev add <template-name>
+# インストール済みの場合
+ai-custom-template-prompt add cursor-rules
+
+# または npxで実行
+npx ai-custom-template-prompt add cursor-rules
 ```
 
-利用可能なテンプレート名:
+**利用可能なテンプレート名:**
 - `cursor-rules` - Cursor用ルールファイル
 - `cursor-prompts` - Cursor用プロンプトファイル
 - `claude-hooks` - Claude用カスタムフック
@@ -70,13 +97,21 @@ pnpm dev add <template-name>
 ### テンプレート一覧を表示
 
 ```bash
-pnpm dev list
+# インストール済みの場合
+ai-custom-template-prompt list
+
+# または npxで実行
+npx ai-custom-template-prompt list
 ```
 
 ### 設定チェック
 
 ```bash
-pnpm dev doctor
+# インストール済みの場合
+ai-custom-template-prompt doctor
+
+# または npxで実行
+npx ai-custom-template-prompt doctor
 ```
 
 プロジェクト内のテンプレートファイルの配置状況を確認できます。
@@ -88,16 +123,13 @@ pnpm dev doctor
 - `ai/claude/custom-hooks.md` - Claudeフック
 - `ai/agents/Agents.md` - Agents設定
 
-## 開発
-
-### ローカル開発環境のセットアップ
+### ビルド
 
 ```bash
-# 依存関係のインストール
-pnpm install
+# TypeScriptをコンパイル
+pnpm build
 
-# 開発モードで実行（tsxを使用）
-pnpm dev <command>
+# ビルド後は dist/ ディレクトリに出力される
 ```
 
 ### ローカルでCLIをリンクして使用
@@ -117,16 +149,23 @@ ai-custom-template-prompt add cursor-rules
 ai-custom-template-prompt doctor
 ```
 
-### ビルド
+## 開発
+
+### ローカル開発環境のセットアップ
 
 ```bash
-# TypeScriptをコンパイル
-pnpm build
+# リポジトリをクローン
+git clone https://github.com/redamoon/ai-custom-template-prompt.git
+cd ai-custom-template-prompt
 
-# ビルド後は dist/ ディレクトリに出力される
+# 依存関係のインストール
+pnpm install
+
+# 開発モードで実行（tsxを使用）
+pnpm dev <command>
 ```
 
-## 動作確認手順
+### 動作確認手順
 
 1. **依存関係のインストール**
    ```bash
