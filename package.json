@@ -1,6 +1,6 @@
 {
   "name": "@redamoon/ai-custom-template-prompt",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "type": "module",
   "description": "CLI tool for managing AI custom templates (Cursor, Claude, Agents)",
   "main": "dist/bin/cli.js",
