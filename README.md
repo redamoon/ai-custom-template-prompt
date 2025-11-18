@@ -12,6 +12,14 @@ npx ai-custom-template-prompt add cursor-rules
 npx ai-custom-template-prompt doctor
 ```
 
+### 主な機能
+
+- ✅ **Cursorルール**: コード品質、テスト、コーディング規約のルール定義
+- ✅ **ネストされたルール**: ディレクトリ別にルールを適用（backend/frontend/server）
+- ✅ **Cursorコマンド**: `/`で呼び出せる再利用可能なワークフロー（PR作成、ブランチ作成など）
+- ✅ **自動適用**: ファイルタイプやディレクトリに応じて自動的にルールを適用
+- ✅ **Manualルール**: `@ruleName`で明示的に指定して使用
+
 ## インストール
 
 ### GitHub Packages（Private）からインストール
@@ -245,10 +253,35 @@ pnpm dev <command>
 
 `templates/` ディレクトリ内のファイルを編集することで、テンプレートの内容をカスタマイズできます。
 
-- `templates/cursor/rules.mdc` - Cursor用ルール
+### Cursorルール
+
+- `templates/cursor/rules.mdc` - 基本ルール（コード品質、テスト、コーディング規約）
+- `templates/cursor/manual-rules.mdc` - Manualルール（高度なパターン）
+- `templates/cursor/test-rules.mdc` - テストファイル用ルール
+- `templates/cursor/api-rules.mdc` - API関連コード用ルール
+- `templates/cursor/backend-rules.mdc` - バックエンド用ルール
+- `templates/cursor/frontend-rules.mdc` - フロントエンド用ルール
+- `templates/cursor/server-rules.mdc` - サーバー用ルール
+
+### Cursorコマンド
+
+- `templates/cursor/commands/create-pr.md` - PR作成コマンド
+- `templates/cursor/commands/create-branch.md` - ブランチ作成コマンド
+
+### その他のテンプレート
+
 - `templates/cursor/prompts.mdc` - Cursor用プロンプト
 - `templates/claude/custom-hooks.md` - Claude用フック
 - `templates/agents/Agents.md` - Agents設定
+
+### コマンドの使用方法
+
+Cursorのチャットで `/` を入力すると、利用可能なコマンドが自動的に表示されます：
+
+- `/create-pr` - PR作成のワークフローを実行
+- `/create-branch` - ブランチ作成のワークフローを実行
+
+コマンドはプロジェクトの `.cursor/commands` ディレクトリに保存され、チーム全体で共有できます。
 
 ## パッケージ配布
 
