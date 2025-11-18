@@ -1,6 +1,7 @@
 import { intro, select, outro } from "@clack/prompts";
 import { getOptions } from "../core/config.js";
 import { generate } from "../core/generator.js";
+import { TemplateKey } from "../core/config.js";
 
 export default async function init() {
   intro("ai-custom-template-prompt Setup");
@@ -17,7 +18,7 @@ export default async function init() {
     return;
   }
 
-  await generate(tool);
+  await generate(tool as TemplateKey);
 
   outro("完了しました！");
 }
