@@ -6,7 +6,10 @@ import { TemplateKey } from "../core/config.js";
 export default async function init() {
   intro("ai-custom-template-prompt Setup");
 
-  const opts = getOptions();
+  const opts = [
+    { value: "all", label: "すべて入れる" },
+    ...getOptions(),
+  ];
 
   const tool = await select({
     message: "セットアップするテンプレートを選択:",
@@ -18,7 +21,7 @@ export default async function init() {
     return;
   }
 
-  await generate(tool as TemplateKey);
+  await generate(tool as TemplateKey | "all");
 
   outro("完了しました！");
 }

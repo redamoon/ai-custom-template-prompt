@@ -63,11 +63,11 @@ export const TEMPLATE_MAP: Record<
   },
   "claude-hooks": {
     from: "claude/custom-hooks.md",
-    to: "ai/claude/custom-hooks.md",
+    to: ".claude/custom-hooks.md",
   },
   agents: {
     from: "agents/Agents.md",
-    to: "ai/agents/Agents.md",
+    to: "AGENTS.md",
   },
 };
 

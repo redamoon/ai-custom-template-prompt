@@ -158,8 +158,8 @@ npx ai-custom-template-prompt doctor
 
 ### その他のテンプレート
 
-- `ai/claude/custom-hooks.md` - Claudeフック
-- `ai/agents/Agents.md` - Agents設定
+- `.claude/custom-hooks.md` - Claudeフック（Claude Desktop用）
+- `AGENTS.md` - Agents設定（プロジェクトルート）
 
 ### ルールの適用方法
 
