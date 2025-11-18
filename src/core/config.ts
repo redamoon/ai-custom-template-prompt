@@ -6,6 +6,9 @@ export type TemplateKey =
   | "cursor-backend-rules"
   | "cursor-frontend-rules"
   | "cursor-server-rules"
+  | "cursor-commands"
+  | "cursor-command-create-pr"
+  | "cursor-command-create-branch"
   | "cursor-prompts"
   | "claude-hooks"
   | "agents";
@@ -41,6 +44,18 @@ export const TEMPLATE_MAP: Record<
   "cursor-server-rules": {
     from: "cursor/server-rules.mdc",
     to: "backend/server/.cursor/rules/server-rules.mdc",
+  },
+  "cursor-commands": {
+    from: "cursor/commands",
+    to: ".cursor/commands",
+  },
+  "cursor-command-create-pr": {
+    from: "cursor/commands/create-pr.md",
+    to: ".cursor/commands/create-pr.md",
+  },
+  "cursor-command-create-branch": {
+    from: "cursor/commands/create-branch.md",
+    to: ".cursor/commands/create-branch.md",
   },
   "cursor-prompts": {
     from: "cursor/prompts.mdc",

@@ -20,14 +20,39 @@ function copy(def: { from: string; to: string }) {
   const src = path.join(templateRoot, def.from);
   const dest = path.join(process.cwd(), def.to);
 
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-
   if (!fs.existsSync(src)) {
     console.log(`(テンプレートなし) Skip: ${def.from}`);
     return;
   }
 
-  fs.copyFileSync(src, dest);
-  console.log(`✔ ${def.to}`);
+  const stat = fs.statSync(src);
+
+  if (stat.isDirectory()) {
+    // ディレクトリの場合は再帰的にコピー
+    fs.mkdirSync(dest, { recursive: true });
+    copyDirectory(src, dest);
+    console.log(`✔ ${def.to}/`);
+  } else {
+    // ファイルの場合は通常通りコピー
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
+    console.log(`✔ ${def.to}`);
+  }
+}
+
+function copyDirectory(src: string, dest: string) {
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      fs.mkdirSync(destPath, { recursive: true });
+      copyDirectory(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
 }
 

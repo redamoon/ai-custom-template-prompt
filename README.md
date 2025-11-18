@@ -96,6 +96,9 @@ npx ai-custom-template-prompt add cursor-rules
 - `cursor-backend-rules` - バックエンド用ルール（ネスト: `backend/.cursor/rules/`）
 - `cursor-frontend-rules` - フロントエンド用ルール（ネスト: `frontend/.cursor/rules/`）
 - `cursor-server-rules` - サーバー用ルール（ネスト: `backend/server/.cursor/rules/`）
+- `cursor-commands` - Cursorコマンドディレクトリ全体（`/`で呼び出し可能）
+- `cursor-command-create-pr` - PR作成コマンド
+- `cursor-command-create-branch` - ブランチ作成コマンド
 - `cursor-prompts` - Cursor用プロンプトファイル
 - `claude-hooks` - Claude用カスタムフック
 - `agents` - Agents設定ファイル
@@ -137,6 +140,13 @@ npx ai-custom-template-prompt doctor
 - `backend/.cursor/rules/backend-rules.mdc` - バックエンド用ルール
 - `frontend/.cursor/rules/frontend-rules.mdc` - フロントエンド用ルール
 - `backend/server/.cursor/rules/server-rules.mdc` - サーバー用ルール
+
+### Cursorコマンド
+
+- `.cursor/commands/create-pr.md` - PR作成コマンド（`/create-pr`で呼び出し）
+- `.cursor/commands/create-branch.md` - ブランチ作成コマンド（`/create-branch`で呼び出し）
+
+コマンドはチャット入力欄で `/` を入力すると自動的に表示され、ワークフローを標準化できます。
 
 ### その他のテンプレート
 
