@@ -26,6 +26,12 @@ npm install -g ai-custom-template-prompt
 
 # または、ローカルインストール
 npm install ai-custom-template-prompt
+
+# または、npxで直接実行（インストール不要）
+npx ai-custom-template-prompt list
+npx ai-custom-template-prompt init
+npx ai-custom-template-prompt add cursor-rules
+npx ai-custom-template-prompt doctor
 ```
 
 ### 開発用インストール
