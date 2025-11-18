@@ -1,0 +1,13 @@
+# GitHub Packages認証設定例
+# このファイルを .npmrc にコピーして、PERSONAL_ACCESS_TOKEN を実際のトークンに置き換えてください
+
+# GitHub Packages用のレジストリ設定
+@your-org:registry=https://npm.pkg.github.com
+
+# 認証トークン（GitHub Personal Access Token）
+# 権限: repo, write:packages, read:packages
+//npm.pkg.github.com/:_authToken=PERSONAL_ACCESS_TOKEN
+
+# Public npmはデフォルトのレジストリを使用
+# registry=https://registry.npmjs.org/
+
