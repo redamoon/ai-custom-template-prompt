@@ -91,9 +91,23 @@ function build(): void {
 function commitAndTag(version: string): void {
   console.log("📝 コミットとタグを作成中...");
   
+  const projectRoot = getProjectRoot();
+  const filesToAdd: string[] = ["package.json", "dist/"];
+  
+  // 存在するロックファイルを追加
+  if (fs.existsSync(path.join(projectRoot, "package-lock.json"))) {
+    filesToAdd.push("package-lock.json");
+  }
+  if (fs.existsSync(path.join(projectRoot, "pnpm-lock.yaml"))) {
+    filesToAdd.push("pnpm-lock.yaml");
+  }
+  if (fs.existsSync(path.join(projectRoot, "yarn.lock"))) {
+    filesToAdd.push("yarn.lock");
+  }
+  
   try {
-    // package.jsonとロックファイルをステージング
-    execSync("git add package.json package-lock.json pnpm-lock.yaml dist/", {
+    // package.jsonとロックファイル、distをステージング
+    execSync(`git add ${filesToAdd.join(" ")}`, {
       stdio: "inherit",
     });
     
