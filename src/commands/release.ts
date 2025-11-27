@@ -92,7 +92,7 @@ function commitAndTag(version: string): void {
   console.log("📝 コミットとタグを作成中...");
   
   const projectRoot = getProjectRoot();
-  const filesToAdd: string[] = ["package.json", "dist/"];
+  const filesToAdd: string[] = ["package.json"];
   
   // 存在するロックファイルを追加
   if (fs.existsSync(path.join(projectRoot, "package-lock.json"))) {
@@ -106,7 +106,7 @@ function commitAndTag(version: string): void {
   }
   
   try {
-    // package.jsonとロックファイル、distをステージング
+    // package.jsonとロックファイルをステージング（distはnpm公開時に含まれるがgitには含めない）
     execSync(`git add ${filesToAdd.join(" ")}`, {
       stdio: "inherit",
     });
