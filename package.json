@@ -1,6 +1,6 @@
 {
   "name": "ai-custom-template-prompt",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "description": "CLI tool for managing AI custom templates (Cursor, Claude, Agents)",
   "main": "dist/bin/cli.js",
