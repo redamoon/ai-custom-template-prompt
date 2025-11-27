@@ -9,6 +9,8 @@ export type TemplateKey =
   | "cursor-commands"
   | "cursor-command-create-pr"
   | "cursor-command-create-branch"
+  | "cursor-command-update-readme"
+  | "cursor-command-release"
   | "cursor-prompts"
   | "claude-hooks"
   | "agents";
@@ -56,6 +58,14 @@ export const TEMPLATE_MAP: Record<
   "cursor-command-create-branch": {
     from: "cursor/commands/create-branch.md",
     to: ".cursor/commands/create-branch.md",
+  },
+  "cursor-command-update-readme": {
+    from: "cursor/commands/update-readme.md",
+    to: ".cursor/commands/update-readme.md",
+  },
+  "cursor-command-release": {
+    from: "cursor/commands/release.md",
+    to: ".cursor/commands/release.md",
   },
   "cursor-prompts": {
     from: "cursor/prompts.mdc",
