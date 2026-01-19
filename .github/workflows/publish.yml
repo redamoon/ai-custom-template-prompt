@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write  # Required for npm Trusted Publishing
 
     steps:
       - name: Checkout code
@@ -20,8 +21,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-          always-auth: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -47,10 +46,16 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Extract version from tag
+      - name: Extract and validate version from tag
         id: get_version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
+          # セマンティックバージョニング形式を検証（例: 1.2.3）
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "Error: Invalid version format: $VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-prerelease or X.Y.Z+build"
+            exit 1
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
@@ -72,16 +77,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js for npm
+      - name: Setup Node.js for npm (Trusted Publishing)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-          always-auth: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to Public npm
+      - name: Publish to Public npm (Trusted Publishing)
+        continue-on-error: true
         run: |
           # package.jsonを一時的に変更してPublic npm用に設定
           cp package.json package.json.backup
@@ -92,12 +95,9 @@ jobs:
             delete pkg.publishConfig;
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
-          # .npmrcをクリアしてからPublic npm用に設定
+          # .npmrcをクリア（Trusted Publishingでは不要）
           rm -f .npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          echo "npm user: $(npm whoami --registry=https://registry.npmjs.org/)"
-          npm publish --access public --registry=https://registry.npmjs.org/
+          # Trusted Publishingを使用して公開（--provenanceフラグで出所証明を生成）
+          npm publish --provenance --access public --registry=https://registry.npmjs.org/
           mv package.json.backup package.json
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
