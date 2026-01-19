@@ -67,9 +67,9 @@ jobs:
       - name: Setup Node.js for npm (Trusted Publishing)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          # Trusted Publishingを使用する場合はalways-authは不要
+          # Trusted Publishingにはnpm v11.5.1+が必要（Node.js 24にはnpm v11が含まれる）
 
       - name: Publish to Public npm (Trusted Publishing)
         continue-on-error: true
@@ -93,7 +93,11 @@ jobs:
           # パッケージが存在するか確認
           echo "Checking if package exists..."
           npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} 2>&1 || echo "Version ${{ steps.get_version.outputs.version }} does not exist yet"
+          # npmバージョンを確認（Trusted Publishingにはnpm v11.5.1+が必要）
+          echo "Checking npm version..."
+          npm --version
           # Trusted Publishingを使用して公開（--provenanceフラグで出所証明を生成）
+          # Node.js 24にはnpm v11が含まれるため、Trusted Publishingが動作する
           echo "Publishing to npm with Trusted Publishing..."
           npm publish --provenance --access public || {
             echo "Publish failed. Error details:"
