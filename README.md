@@ -1,6 +1,6 @@
 # ai-custom-template-prompt
 
-AI開発ツール（Cursor、Claude、Agents）向けのカスタムテンプレート管理CLIツールです。
+AI開発ツール（Cursor、Agents）向けのカスタムテンプレート管理CLIツールです。
 
 ## クイックスタート
 
@@ -113,8 +113,6 @@ npx ai-custom-template-prompt add cursor-rules
 - `cursor-command-create-branch` - ブランチ作成コマンド
 - `cursor-command-update-readme` - README更新コマンド
 - `cursor-command-release` - リリースコマンド
-- `cursor-prompts` - Cursor用プロンプトファイル
-- `claude-hooks` - Claude用カスタムフック
 - `agents` - Agents設定ファイル
 
 ### テンプレート一覧を表示
@@ -147,7 +145,6 @@ npx ai-custom-template-prompt doctor
 - `.cursor/rules/manual-rules.mdc` - Manualルール（@manual-rulesで指定）
 - `.cursor/rules/test-rules.mdc` - テストファイル用ルール（自動適用）
 - `.cursor/rules/api-rules.mdc` - API関連コード用ルール（自動適用）
-- `.cursor/prompts.mdc` - Cursorプロンプト
 
 ### ネストされたルール（ディレクトリ別）
 
@@ -164,7 +161,6 @@ npx ai-custom-template-prompt doctor
 
 ### その他のテンプレート
 
-- `.claude/custom-hooks.md` - Claudeフック（Claude Desktop用）
 - `AGENTS.md` - Agents設定（プロジェクトルート）
 
 ### ルールの適用方法
@@ -276,8 +272,6 @@ pnpm dev <command>
 
 ### その他のテンプレート
 
-- `templates/cursor/prompts.mdc` - Cursor用プロンプト
-- `templates/claude/custom-hooks.md` - Claude用フック
 - `templates/agents/Agents.md` - Agents設定
 
 ### コマンドの使用方法

@@ -3,7 +3,7 @@ import { getOptions } from "../core/config.js";
 import { generate } from "../core/generator.js";
 import { TemplateKey } from "../core/config.js";
 
-export default async function init() {
+export default async function init(dryRun = false) {
   intro("ai-custom-template-prompt Setup");
 
   const opts = [
@@ -21,8 +21,17 @@ export default async function init() {
     return;
   }
 
-  await generate(tool as TemplateKey | "all");
+  // デバッグ: 選択された値を確認
+  if (dryRun) {
+    console.log(`\n選択されたテンプレート: ${tool}`);
+  }
 
-  outro("完了しました！");
+  await generate(tool as TemplateKey | "all", dryRun);
+
+  if (dryRun) {
+    outro("Dry run完了しました！");
+  } else {
+    outro("完了しました！");
+  }
 }
 

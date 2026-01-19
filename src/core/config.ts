@@ -11,8 +11,6 @@ export type TemplateKey =
   | "cursor-command-create-branch"
   | "cursor-command-update-readme"
   | "cursor-command-release"
-  | "cursor-prompts"
-  | "claude-hooks"
   | "agents";
 
 export const TEMPLATE_MAP: Record<
@@ -20,31 +18,31 @@ export const TEMPLATE_MAP: Record<
   { from: string; to: string }
 > = {
   "cursor-rules": {
-    from: "cursor/rules.mdc",
+    from: "cursor/rules/rules.mdc",
     to: ".cursor/rules/rules.mdc",
   },
   "cursor-manual-rules": {
-    from: "cursor/manual-rules.mdc",
+    from: "cursor/rules/manual-rules.mdc",
     to: ".cursor/rules/manual-rules.mdc",
   },
   "cursor-test-rules": {
-    from: "cursor/test-rules.mdc",
+    from: "cursor/rules/test-rules.mdc",
     to: ".cursor/rules/test-rules.mdc",
   },
   "cursor-api-rules": {
-    from: "cursor/api-rules.mdc",
+    from: "cursor/rules/api-rules.mdc",
     to: ".cursor/rules/api-rules.mdc",
   },
   "cursor-backend-rules": {
-    from: "cursor/backend-rules.mdc",
+    from: "cursor/rules/backend-rules.mdc",
     to: "backend/.cursor/rules/backend-rules.mdc",
   },
   "cursor-frontend-rules": {
-    from: "cursor/frontend-rules.mdc",
+    from: "cursor/rules/frontend-rules.mdc",
     to: "frontend/.cursor/rules/frontend-rules.mdc",
   },
   "cursor-server-rules": {
-    from: "cursor/server-rules.mdc",
+    from: "cursor/rules/server-rules.mdc",
     to: "backend/server/.cursor/rules/server-rules.mdc",
   },
   "cursor-commands": {
@@ -66,14 +64,6 @@ export const TEMPLATE_MAP: Record<
   "cursor-command-release": {
     from: "cursor/commands/release.md",
     to: ".cursor/commands/release.md",
-  },
-  "cursor-prompts": {
-    from: "cursor/prompts.mdc",
-    to: ".cursor/prompts.mdc",
-  },
-  "claude-hooks": {
-    from: "claude/custom-hooks.md",
-    to: ".claude/custom-hooks.md",
   },
   agents: {
     from: "agents/Agents.md",

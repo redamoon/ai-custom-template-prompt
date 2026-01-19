@@ -12,9 +12,11 @@ import release from "../src/commands/release.js";
 const [, , command, ...args] = argv;
 
 async function main() {
+  const dryRun = args.includes("--dry-run");
+  
   switch (command) {
     case "init":
-      await init();
+      await init(dryRun);
       break;
     case "add":
       await add(args);
@@ -33,7 +35,7 @@ async function main() {
       break;
     default:
       console.log(`
-Usage: ai-custom-template-prompt <command>
+Usage: ai-custom-template-prompt <command> [options]
 
 Commands:
   init          初回セットアップ
@@ -42,6 +44,9 @@ Commands:
   doctor        設定チェック
   update-readme READMEを自動生成
   release <type> リリースを実行 (patch/minor/major)
+
+Options:
+  --dry-run     実際のファイル操作を行わず、実行予定の操作を表示
 `);
   }
 }

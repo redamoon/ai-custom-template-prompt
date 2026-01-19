@@ -2,7 +2,9 @@ import { generate } from "../core/generator.js";
 import { TEMPLATE_MAP, TemplateKey } from "../core/config.js";
 
 export default async function add(args: string[]) {
-  const key = args[0] as TemplateKey;
+  const dryRun = args.includes("--dry-run");
+  const filteredArgs = args.filter((arg) => arg !== "--dry-run");
+  const key = filteredArgs[0] as TemplateKey;
 
   if (!key) {
     console.error("Error: テンプレート名を指定してください");
@@ -16,7 +18,9 @@ export default async function add(args: string[]) {
     return;
   }
 
-  await generate(key);
-  console.log(`✔ added: ${key}`);
+  await generate(key, dryRun);
+  if (!dryRun) {
+    console.log(`✔ added: ${key}`);
+  }
 }
 

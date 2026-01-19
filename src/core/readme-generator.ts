@@ -89,7 +89,6 @@ export function collectProjectStructure(): ProjectStructure {
     ".next",
     ".cache",
     ".cursor",
-    ".claude",
   ];
   
   function buildTree(dir: string, prefix: string = "", isLast: boolean = true): string {
@@ -99,8 +98,8 @@ export function collectProjectStructure(): ProjectStructure {
         if (entry.isDirectory() && ignoreDirs.includes(entry.name)) {
           return false;
         }
-        // ドットファイルをスキップ（.cursor, .claudeは既に除外）
-        if (entry.name.startsWith(".") && entry.name !== ".cursor" && entry.name !== ".claude") {
+        // ドットファイルをスキップ（.cursorは既に除外）
+        if (entry.name.startsWith(".") && entry.name !== ".cursor") {
           return false;
         }
         return true;
