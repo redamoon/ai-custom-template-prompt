@@ -69,9 +69,14 @@ jobs:
 
       - name: Publish to Public npm (Trusted Publishing)
         continue-on-error: true
+        env:
+          # NODE_AUTH_TOKENをクリアしてTrusted Publishingを使用
+          NODE_AUTH_TOKEN: ''
         run: |
           # GitHub Packages用の.npmrcを確実に削除
           rm -f .npmrc
+          # 環境変数からNODE_AUTH_TOKENを削除（Trusted Publishingを使用するため）
+          unset NODE_AUTH_TOKEN
           # package.jsonを一時的に変更してPublic npm用に設定
           cp package.json package.json.backup
           node -e "
