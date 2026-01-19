@@ -1,0 +1,151 @@
+---
+description: テストファイルに自動適用されるテスト専用ルール
+globs: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "**/__tests__/**/*"]
+alwaysApply: false
+---
+
+# Test Rules
+
+このルールは、テストファイル（`*.test.ts`、`*.spec.ts`など）に自動的に適用されます。
+
+## テストの構造
+
+### AAA パターン
+
+すべてのテストは以下の構造に従う：
+
+```typescript
+describe('ComponentName', () => {
+  it('should do something specific', () => {
+    // Arrange: テストの準備
+    const input = 'test data';
+    
+    // Act: テスト対象の実行
+    const result = functionUnderTest(input);
+    
+    // Assert: 結果の検証
+    expect(result).toBe(expected);
+  });
+});
+```
+
+## テストの命名規則
+
+- **describe**: テスト対象のユニットを説明（例: `UserService`、`LoginForm`）
+- **it**: 期待される動作を自然言語で記述（例: `should return user when valid id is provided`）
+- テスト名は「何をテストするか」が明確になるように記述
+
+## モックとスタブ
+
+### モックの使用原則
+
+- 外部依存関係（API、データベース、ファイルシステム）をモックする
+- テスト対象のユニットのみをテストする（依存関係はモック）
+- モックの動作は実際の実装に近づける
+
+### モックの例
+
+```typescript
+// API呼び出しのモック
+jest.mock('../api/userApi', () => ({
+  fetchUser: jest.fn().mockResolvedValue({ id: 1, name: 'Test User' }),
+}));
+
+// タイマーのモック
+jest.useFakeTimers();
+```
+
+## テストカバレッジ
+
+### カバレッジ目標
+
+- **全体**: 80%以上
+- **重要なビジネスロジック**: 100%
+- **ユーティリティ関数**: 100%
+- **UIコンポーネント**: 主要なインタラクションをカバー
+
+### カバレッジの確認
+
+```bash
+npm run test:coverage
+```
+
+## テストの種類
+
+### 単体テスト（Unit Tests）
+
+- 1つの関数・メソッド・コンポーネントをテスト
+- 依存関係はすべてモック
+- 高速に実行される
+
+### 統合テスト（Integration Tests）
+
+- 複数のコンポーネントの連携をテスト
+- 実際のデータベースやAPIを使用（テスト環境）
+- より現実的なシナリオをテスト
+
+### E2Eテスト（End-to-End Tests）
+
+- ユーザーの操作フロー全体をテスト
+- 実際のブラウザやアプリケーション環境を使用
+- 重要なユーザーフローのみをカバー
+
+## テストデータ
+
+### テストデータの管理
+
+- テストデータは `__fixtures__` ディレクトリに配置
+- 再利用可能なテストデータはファクトリー関数で生成
+- テストごとに独立したデータを使用（テスト間の依存を避ける）
+
+### テストデータの例
+
+```typescript
+// __fixtures__/users.ts
+export const createMockUser = (overrides = {}) => ({
+  id: 1,
+  name: 'Test User',
+  email: 'test@example.com',
+  ...overrides,
+});
+```
+
+## アサーション
+
+### 適切なアサーションの使用
+
+- `expect().toBe()`: プリミティブ値の比較
+- `expect().toEqual()`: オブジェクトや配列の比較
+- `expect().toMatchObject()`: オブジェクトの部分一致
+- `expect().toThrow()`: エラーの検証
+
+### カスタムマッチャー
+
+- 複雑なアサーションはカスタムマッチャーを作成
+- テストの可読性を向上させる
+
+## テストの実行
+
+### テストの実行方法
+
+```bash
+# すべてのテストを実行
+npm test
+
+# ウォッチモードで実行
+npm test -- --watch
+
+# カバレッジ付きで実行
+npm test -- --coverage
+
+# 特定のファイルのみ実行
+npm test -- path/to/test/file.test.ts
+```
+
+## テストのベストプラクティス
+
+- **独立性**: テストは互いに依存しない
+- **再現性**: 同じテストは常に同じ結果を返す
+- **速度**: テストは高速に実行される
+- **明確性**: テストの意図が明確に伝わる
+- **保守性**: テストコードも本番コードと同様に保守する

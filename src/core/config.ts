@@ -1,3 +1,9 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export type TemplateKey =
   | "cursor-rules"
   | "cursor-manual-rules"
@@ -76,5 +82,47 @@ export function getOptions() {
     value: k as TemplateKey,
     label: k.replace(/-/g, " "),
   }));
+}
+
+// templates/cursor/rules/ディレクトリ内のルールファイルを動的に検出
+export function getAvailableRules(): Array<{ value: TemplateKey; label: string }> {
+  // テンプレートルートを取得（generator.tsと同じロジック）
+  function getTemplateRoot() {
+    const cwdTemplatesPath = path.join(process.cwd(), "templates");
+    if (fs.existsSync(cwdTemplatesPath)) {
+      return cwdTemplatesPath;
+    }
+    
+    // フォールバック: 相対パスで探す
+    const fallbackPath = path.join(__dirname, "..", "..", "templates");
+    if (fs.existsSync(fallbackPath)) {
+      return fallbackPath;
+    }
+    
+    throw new Error("テンプレートディレクトリが見つかりません");
+  }
+  
+  const templateRoot = getTemplateRoot();
+  const rulesDir = path.join(templateRoot, "cursor", "rules");
+  
+  if (!fs.existsSync(rulesDir)) {
+    return [];
+  }
+  
+  const files = fs.readdirSync(rulesDir);
+  return files
+    .filter((file: string) => file.endsWith(".mdc"))
+    .map((file: string) => {
+      const name = file.replace(".mdc", "");
+      const key = `cursor-${name}` as TemplateKey;
+      return {
+        value: key,
+        label: name.replace(/-/g, " "),
+      };
+    })
+    .filter((item: { value: TemplateKey; label: string }) => {
+      // TEMPLATE_MAPに存在するもののみを返す
+      return TEMPLATE_MAP[item.value] !== undefined;
+    });
 }
 
