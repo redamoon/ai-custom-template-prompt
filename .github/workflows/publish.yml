@@ -80,12 +80,19 @@ jobs:
           "
           # .npmrcをクリア（Trusted Publishingでは不要）
           rm -f .npmrc
+          # パッケージが存在するか確認
+          echo "Checking if package exists..."
+          npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} || echo "Version ${{ steps.get_version.outputs.version }} does not exist yet"
           # Trusted Publishingを使用して公開（--provenanceフラグで出所証明を生成）
-          # 初回公開の場合は--access publicが必要
+          echo "Publishing to npm..."
           npm publish --provenance --access public --registry=https://registry.npmjs.org/ || {
-            echo "Publish failed, checking if package exists..."
-            npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} || echo "Package does not exist, this might be a first-time publish issue"
+            echo "Publish failed. Error details:"
+            echo "This might be due to:"
+            echo "1. Trusted Publishing not properly configured"
+            echo "2. Package name or version conflict"
+            echo "3. Authentication issues"
             exit 1
           }
+          echo "Successfully published to npm!"
           mv package.json.backup package.json
 
