@@ -1,5 +1,5 @@
 {
-  "name": "ai-custom-template-prompt",
+  "name": "@redamoon/ai-custom-template-prompt",
   "version": "0.3.3",
   "type": "module",
   "description": "CLI tool for managing AI custom templates (Cursor, Claude, Agents)",
