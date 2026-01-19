@@ -21,7 +21,7 @@ export const TEMPLATE_MAP: Record<
 > = {
   "cursor-rules": {
     from: "cursor/rules.mdc",
-    to: ".cursor/rules.mdc",
+    to: ".cursor/rules/rules.mdc",
   },
   "cursor-manual-rules": {
     from: "cursor/manual-rules.mdc",

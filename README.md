@@ -143,7 +143,7 @@ npx ai-custom-template-prompt doctor
 
 ### プロジェクトルートのルール
 
-- `.cursor/rules.mdc` - Cursor基本ルール（常に適用）
+- `.cursor/rules/rules.mdc` - Cursor基本ルール（常に適用）
 - `.cursor/rules/manual-rules.mdc` - Manualルール（@manual-rulesで指定）
 - `.cursor/rules/test-rules.mdc` - テストファイル用ルール（自動適用）
 - `.cursor/rules/api-rules.mdc` - API関連コード用ルール（自動適用）
@@ -169,7 +169,7 @@ npx ai-custom-template-prompt doctor
 
 ### ルールの適用方法
 
-- **基本ルール** (`rules.mdc`): `alwaysApply: true` で常に適用
+- **基本ルール** (`rules/rules.mdc`): `alwaysApply: true` で常に適用
 - **Manualルール** (`manual-rules.mdc`): `@manual-rules` で明示的に指定した場合のみ適用
 - **テストルール** (`test-rules.mdc`): `globs: ["**/*.test.ts"]` でテストファイルに自動適用
 - **APIルール** (`api-rules.mdc`): `globs: ["**/api/**/*"]` でAPIディレクトリに自動適用
