@@ -1,6 +1,6 @@
 {
   "name": "@redamoon/ai-custom-template-prompt",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "type": "module",
   "description": "CLI tool for managing AI custom templates (Cursor, Agents)",
   "main": "dist/bin/cli.js",
@@ -31,7 +31,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@clack/prompts": "^0.7.0"
+    "@clack/prompts": "^0.7.0",
+    "@inquirer/prompts": "^8.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

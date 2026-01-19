@@ -1,4 +1,5 @@
-import { intro, outro, select, confirm, isCancel, cancel } from "@clack/prompts";
+import { intro, outro, cancel } from "@clack/prompts";
+import { checkbox } from "@inquirer/prompts";
 import { getOptions, getAvailableRules } from "../core/config.js";
 import { generate } from "../core/generator.js";
 import { TemplateKey } from "../core/config.js";
@@ -7,56 +8,32 @@ export default async function init(dryRun = false) {
   intro("ai-custom-template-prompt Setup");
 
   const opts = [
-    { value: "all", label: "すべて入れる" },
-    { value: "rules", label: "ルールを選択" },
-    ...getOptions(),
-  ];
+    { name: "すべて入れる", value: "all" },
+    { name: "ルールを選択", value: "rules" },
+    ...getOptions().map((opt) => ({
+      name: opt.label,
+      value: opt.value,
+    })),
+  ].map((opt) => ({
+    name: opt.name,
+    value: opt.value,
+  }));
 
-  const selectedTemplates: (TemplateKey | "all" | "rules")[] = [];
-
-  // 複数選択のループ
-  while (true) {
-    // 選択済みの項目をチェックマーク付きで表示
-    const remainingOpts = opts
-      .filter((opt) => {
-        if (opt.value === "all") return !selectedTemplates.includes("all");
-        if (opt.value === "rules") return !selectedTemplates.includes("rules");
-        return !selectedTemplates.includes(opt.value as TemplateKey);
-      })
-      .map((opt) => ({
-        value: opt.value,
-        label: (opt.value === "all" && selectedTemplates.includes("all")) ||
-               (opt.value === "rules" && selectedTemplates.includes("rules")) ||
-               (opt.value !== "all" && opt.value !== "rules" && selectedTemplates.includes(opt.value as TemplateKey))
-          ? `✓ ${opt.label}` 
-          : opt.label,
-      }));
-
-    if (remainingOpts.length === 0) {
-      break;
-    }
-
-    const selected = await select({
-      message: selectedTemplates.length === 0
-        ? "セットアップするテンプレートを選択（矢印キーで移動、Enterで選択）:"
-        : `追加でテンプレートを選択（既に選択済み: ${selectedTemplates.length}個）:`,
-      options: [
-        ...remainingOpts,
-        { value: "done", label: "✅ 選択完了して実行" },
-      ],
+  try {
+    // メインのテンプレート選択
+    const selectedValues = await checkbox({
+      message: "セットアップするテンプレートを選択（スペースキーで選択/解除、Enterで確定）:",
+      choices: opts,
     });
 
-    if (isCancel(selected)) {
-      cancel("キャンセルされました");
+    // キャンセルされた場合（Ctrl+Cなど）
+    if (!selectedValues || selectedValues.length === 0) {
+      cancel("テンプレートが選択されませんでした");
       return;
     }
 
-    if (selected === "done") {
-      break;
-    }
-
     // 「すべて入れる」が選択された場合は、それだけを実行して終了
-    if (selected === "all") {
+    if (selectedValues.includes("all")) {
       await generate("all", dryRun);
       if (dryRun) {
         outro("Dry run完了しました！");
@@ -66,133 +43,81 @@ export default async function init(dryRun = false) {
       return;
     }
 
-    // 選択済みの場合は選択解除、未選択の場合は選択
-    if (selected === "all" || selected === "rules") {
-      if (selectedTemplates.includes(selected)) {
-        selectedTemplates.splice(selectedTemplates.indexOf(selected), 1);
-        console.log(`\n✓ "${selected}" の選択を解除しました`);
-      } else {
-        selectedTemplates.push(selected);
-        console.log(`\n✓ "${selected}" を選択しました`);
-      }
-    } else {
-      const templateKey = selected as TemplateKey;
-      if (selectedTemplates.includes(templateKey)) {
-        selectedTemplates.splice(selectedTemplates.indexOf(templateKey), 1);
-        console.log(`\n✓ "${String(templateKey)}" の選択を解除しました`);
-      } else {
-        selectedTemplates.push(templateKey);
-        console.log(`\n✓ "${String(templateKey)}" を選択しました`);
-      }
-    }
+    // 選択されたテンプレートを処理
+    const selectedTemplates: (TemplateKey | "rules")[] = selectedValues.filter(
+      (v): v is TemplateKey | "rules" => v !== "all"
+    );
 
-    // rulesを選択した場合は、利用可能なルールファイルを選択
-    if (selected === "rules") {
+    // 「ルールを選択」が含まれている場合の処理
+    let finalTemplates: TemplateKey[] = [];
+    const hasRules = selectedTemplates.includes("rules");
+
+    if (hasRules) {
       const availableRules = getAvailableRules();
-      
+
       if (availableRules.length === 0) {
         console.log("⚠️  利用可能なルールファイルが見つかりませんでした。");
-        continue;
-      }
-
-      const selectedRules: TemplateKey[] = [];
-
-      // ルールの複数選択ループ
-      while (true) {
-        const remainingRules = availableRules
-          .filter((rule) => !selectedRules.includes(rule.value))
-          .map((rule) => ({
-            value: rule.value,
-            label: selectedRules.includes(rule.value)
-              ? `✓ ${rule.label}`
-              : rule.label,
-          }));
-
-        if (remainingRules.length === 0) {
-          break;
-        }
-
-        const selectedRule = await select({
-          message: selectedRules.length === 0
-            ? "追加するルールを選択（矢印キーで移動、Enterで選択）:"
-            : `追加でルールを選択（既に選択済み: ${selectedRules.length}個）:`,
-          options: [
-            ...remainingRules,
-            { value: "done", label: "✅ ルール選択完了" },
-          ],
+        // rulesを除外して続行
+        finalTemplates = selectedTemplates.filter(
+          (t): t is TemplateKey => t !== "rules"
+        );
+      } else {
+        // ルール選択のcheckbox
+        const ruleChoices = availableRules.map((rule) => ({
+          name: rule.label,
+          value: rule.value,
+        }));
+        const selectedRules = await checkbox<TemplateKey>({
+          message: "追加するルールを選択（スペースキーで選択/解除、Enterで確定）:",
+          choices: ruleChoices,
         });
 
-        if (isCancel(selectedRule)) {
-          console.log("⚠️  ルールの選択がキャンセルされました。");
-          break;
-        }
-
-        if (selectedRule === "done") {
-          break;
-        }
-
-        const ruleKey = selectedRule as TemplateKey;
-        if (selectedRules.includes(ruleKey)) {
-          selectedRules.splice(selectedRules.indexOf(ruleKey), 1);
-          console.log(`\n✓ ルール "${String(ruleKey)}" の選択を解除しました`);
-        } else {
-          selectedRules.push(ruleKey);
-          console.log(`\n✓ ルール "${String(ruleKey)}" を選択しました`);
-        }
+        // rules以外のテンプレートと選択されたルールを結合
+        finalTemplates = [
+          ...selectedTemplates.filter((t): t is TemplateKey => t !== "rules"),
+          ...(selectedRules || []),
+        ];
       }
-
-      // 選択されたルールをテンプレートリストに追加（rules自体は削除）
-      const rulesIndex = selectedTemplates.indexOf("rules");
-      if (rulesIndex !== -1) {
-        selectedTemplates.splice(rulesIndex, 1);
-      }
-      selectedTemplates.push(...selectedRules);
+    } else {
+      finalTemplates = selectedTemplates.filter(
+        (t): t is TemplateKey => t !== "rules"
+      );
     }
 
-    // 続けて選択するか確認
-    const continueSelecting = await confirm({
-      message: `続けてテンプレートを選択しますか？（現在 ${selectedTemplates.length} 個選択済み）`,
-      initialValue: true,
-    });
-
-    if (isCancel(continueSelecting) || !continueSelecting) {
-      break;
+    // 選択されていない場合の処理
+    if (finalTemplates.length === 0) {
+      cancel("実行するテンプレートがありませんでした");
+      return;
     }
-  }
 
-  // 選択されていない場合の処理
-  if (selectedTemplates.length === 0) {
-    cancel("テンプレートが選択されませんでした");
-    return;
-  }
-
-  // "all"と"rules"を除外して、実際のテンプレートキーのみを取得
-  const templatesToGenerate = selectedTemplates.filter(
-    (t): t is TemplateKey => t !== "all" && t !== "rules"
-  );
-
-  // 選択されたテンプレートを表示
-  if (templatesToGenerate.length > 0) {
-    console.log(`\n📦 選択されたテンプレート (${templatesToGenerate.length}個):`);
-    templatesToGenerate.forEach((template, index) => {
+    // 選択されたテンプレートを表示
+    console.log(`\n📦 選択されたテンプレート (${finalTemplates.length}個):`);
+    finalTemplates.forEach((template, index) => {
       console.log(`  ${index + 1}. ${String(template)}`);
     });
     console.log("");
 
     // 選択されたテンプレートを処理
-    for (const tool of templatesToGenerate) {
+    for (const tool of finalTemplates) {
       console.log(`\n🔧 処理中: ${tool}`);
       await generate(tool, dryRun);
     }
-  } else {
-    cancel("実行するテンプレートがありませんでした");
-    return;
-  }
 
-  if (dryRun) {
-    outro("Dry run完了しました！");
-  } else {
-    outro("完了しました！");
+    if (dryRun) {
+      outro("Dry run完了しました！");
+    } else {
+      outro("完了しました！");
+    }
+  } catch (error) {
+    // Ctrl+Cなどでキャンセルされた場合
+    if (error && typeof error === "object" && "message" in error) {
+      const err = error as { message?: string };
+      if (err.message === "User force closed the prompt with 0x03") {
+        cancel("キャンセルされました");
+        return;
+      }
+    }
+    throw error;
   }
 }
 
