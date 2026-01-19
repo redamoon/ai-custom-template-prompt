@@ -65,10 +65,13 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+          # Trusted Publishingを使用する場合はalways-authは不要
 
       - name: Publish to Public npm (Trusted Publishing)
         continue-on-error: true
         run: |
+          # GitHub Packages用の.npmrcを確実に削除
+          rm -f .npmrc
           # package.jsonを一時的に変更してPublic npm用に設定
           cp package.json package.json.backup
           node -e "
@@ -78,19 +81,22 @@ jobs:
             delete pkg.publishConfig;
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
-          # .npmrcをクリア（Trusted Publishingでは不要）
-          rm -f .npmrc
           # パッケージが存在するか確認
           echo "Checking if package exists..."
-          npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} || echo "Version ${{ steps.get_version.outputs.version }} does not exist yet"
+          npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} 2>&1 || echo "Version ${{ steps.get_version.outputs.version }} does not exist yet"
           # Trusted Publishingを使用して公開（--provenanceフラグで出所証明を生成）
-          echo "Publishing to npm..."
-          npm publish --provenance --access public --registry=https://registry.npmjs.org/ || {
+          echo "Publishing to npm with Trusted Publishing..."
+          npm publish --provenance --access public || {
             echo "Publish failed. Error details:"
             echo "This might be due to:"
-            echo "1. Trusted Publishing not properly configured"
+            echo "1. Trusted Publishing not properly configured in GitHub repository settings"
             echo "2. Package name or version conflict"
-            echo "3. Authentication issues"
+            echo "3. Authentication issues with npm Trusted Publishing"
+            echo ""
+            echo "To fix Trusted Publishing:"
+            echo "1. Go to https://github.com/redamoon/ai-custom-template-prompt/settings/secrets/actions"
+            echo "2. Ensure npm Trusted Publishing is enabled"
+            echo "3. Check npm account settings at https://www.npmjs.com/settings/redamoon/automation"
             exit 1
           }
           echo "Successfully published to npm!"
