@@ -20,7 +20,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx bin/cli.ts",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "cli",
