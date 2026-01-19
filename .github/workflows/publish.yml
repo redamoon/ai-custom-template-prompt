@@ -81,6 +81,11 @@ jobs:
           # .npmrcをクリア（Trusted Publishingでは不要）
           rm -f .npmrc
           # Trusted Publishingを使用して公開（--provenanceフラグで出所証明を生成）
-          npm publish --provenance --access public --registry=https://registry.npmjs.org/
+          # 初回公開の場合は--access publicが必要
+          npm publish --provenance --access public --registry=https://registry.npmjs.org/ || {
+            echo "Publish failed, checking if package exists..."
+            npm view ai-custom-template-prompt@${{ steps.get_version.outputs.version }} || echo "Package does not exist, this might be a first-time publish issue"
+            exit 1
+          }
           mv package.json.backup package.json
 
