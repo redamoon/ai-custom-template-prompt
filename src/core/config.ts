@@ -4,125 +4,164 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export type TemplateKey =
-  | "cursor-rules"
-  | "cursor-manual-rules"
-  | "cursor-test-rules"
-  | "cursor-api-rules"
-  | "cursor-backend-rules"
-  | "cursor-frontend-rules"
-  | "cursor-server-rules"
-  | "cursor-commands"
-  | "cursor-command-create-pr"
-  | "cursor-command-create-branch"
-  | "cursor-command-update-readme"
-  | "cursor-command-release"
-  | "agents";
+// テンプレートルートを取得
+function getTemplateRoot() {
+  const cwdTemplatesPath = path.join(process.cwd(), "templates");
+  if (fs.existsSync(cwdTemplatesPath)) {
+    return cwdTemplatesPath;
+  }
 
-export const TEMPLATE_MAP: Record<
-  TemplateKey,
-  { from: string; to: string }
-> = {
-  "cursor-rules": {
-    from: "cursor/rules/rules.mdc",
-    to: ".cursor/rules/rules.mdc",
-  },
-  "cursor-manual-rules": {
-    from: "cursor/rules/manual-rules.mdc",
-    to: ".cursor/rules/manual-rules.mdc",
-  },
-  "cursor-test-rules": {
-    from: "cursor/rules/test-rules.mdc",
-    to: ".cursor/rules/test-rules.mdc",
-  },
-  "cursor-api-rules": {
-    from: "cursor/rules/api-rules.mdc",
-    to: ".cursor/rules/api-rules.mdc",
-  },
-  "cursor-backend-rules": {
-    from: "cursor/rules/backend-rules.mdc",
-    to: "backend/.cursor/rules/backend-rules.mdc",
-  },
-  "cursor-frontend-rules": {
-    from: "cursor/rules/frontend-rules.mdc",
-    to: "frontend/.cursor/rules/frontend-rules.mdc",
-  },
-  "cursor-server-rules": {
-    from: "cursor/rules/server-rules.mdc",
-    to: "backend/server/.cursor/rules/server-rules.mdc",
-  },
-  "cursor-commands": {
-    from: "cursor/commands",
-    to: ".cursor/commands",
-  },
-  "cursor-command-create-pr": {
-    from: "cursor/commands/create-pr.md",
-    to: ".cursor/commands/create-pr.md",
-  },
-  "cursor-command-create-branch": {
-    from: "cursor/commands/create-branch.md",
-    to: ".cursor/commands/create-branch.md",
-  },
-  "cursor-command-update-readme": {
-    from: "cursor/commands/update-readme.md",
-    to: ".cursor/commands/update-readme.md",
-  },
-  "cursor-command-release": {
-    from: "cursor/commands/release.md",
-    to: ".cursor/commands/release.md",
-  },
-  agents: {
-    from: "agents/Agents.md",
-    to: "AGENTS.md",
-  },
-};
+  // フォールバック: 相対パスで探す
+  const fallbackPath = path.join(__dirname, "..", "..", "templates");
+  if (fs.existsSync(fallbackPath)) {
+    return fallbackPath;
+  }
+
+  throw new Error("テンプレートディレクトリが見つかりません");
+}
+
+// 動的にTemplateKeyを生成するための型
+export type TemplateKey = string;
+
+// テンプレートカテゴリの定義
+export interface TemplateCategory {
+  name: string;
+  items: Array<{ value: TemplateKey; label: string }>;
+}
+
+// テンプレートマッピングの型
+export interface TemplateMapping {
+  from: string;
+  to: string;
+}
+
+// 動的にテンプレートマップを生成
+export function getTemplateMap(): Record<TemplateKey, TemplateMapping> {
+  const templateRoot = getTemplateRoot();
+  const map: Record<TemplateKey, TemplateMapping> = {};
+
+  // Rules: templates/cursor/rules/*.mdc
+  const rulesDir = path.join(templateRoot, "cursor", "rules");
+  if (fs.existsSync(rulesDir)) {
+    const ruleFiles = fs.readdirSync(rulesDir).filter((f) => f.endsWith(".mdc"));
+    for (const file of ruleFiles) {
+      const name = file.replace(".mdc", "");
+      const key = `cursor-${name}`;
+      map[key] = {
+        from: `cursor/rules/${file}`,
+        to: `.cursor/rules/${file}`,
+      };
+    }
+  }
+
+  // Commands: templates/cursor/commands/*.md
+  const commandsDir = path.join(templateRoot, "cursor", "commands");
+  if (fs.existsSync(commandsDir)) {
+    const commandFiles = fs.readdirSync(commandsDir).filter((f) => f.endsWith(".md"));
+    for (const file of commandFiles) {
+      const name = file.replace(".md", "");
+      const key = `cursor-command-${name}`;
+      map[key] = {
+        from: `cursor/commands/${file}`,
+        to: `.cursor/commands/${file}`,
+      };
+    }
+  }
+
+  // Agents: templates/agents/*.md
+  const agentsDir = path.join(templateRoot, "agents");
+  if (fs.existsSync(agentsDir)) {
+    const agentFiles = fs.readdirSync(agentsDir).filter((f) => f.endsWith(".md"));
+    for (const file of agentFiles) {
+      const name = file.replace(".md", "");
+      const key = `agent-${name.toLowerCase()}`;
+      map[key] = {
+        from: `agents/${file}`,
+        to: name === "Agents" ? "AGENTS.md" : `${name}.md`,
+      };
+    }
+  }
+
+  return map;
+}
+
+// 後方互換性のためのTEMPLATE_MAP（動的に生成）
+export const TEMPLATE_MAP = getTemplateMap();
 
 export function getOptions() {
-  return Object.keys(TEMPLATE_MAP).map((k) => ({
+  const map = getTemplateMap();
+  return Object.keys(map).map((k) => ({
     value: k as TemplateKey,
     label: k.replace(/-/g, " "),
   }));
 }
 
-// templates/cursor/rules/ディレクトリ内のルールファイルを動的に検出
-export function getAvailableRules(): Array<{ value: TemplateKey; label: string }> {
-  // テンプレートルートを取得（generator.tsと同じロジック）
-  function getTemplateRoot() {
-    const cwdTemplatesPath = path.join(process.cwd(), "templates");
-    if (fs.existsSync(cwdTemplatesPath)) {
-      return cwdTemplatesPath;
-    }
-    
-    // フォールバック: 相対パスで探す
-    const fallbackPath = path.join(__dirname, "..", "..", "templates");
-    if (fs.existsSync(fallbackPath)) {
-      return fallbackPath;
-    }
-    
-    throw new Error("テンプレートディレクトリが見つかりません");
-  }
-  
+// カテゴリ別にテンプレートを取得（動的にファイルから読み込み）
+export function getTemplatesByCategory(): TemplateCategory[] {
   const templateRoot = getTemplateRoot();
+  const categories: TemplateCategory[] = [];
+
+  // Rules カテゴリ
   const rulesDir = path.join(templateRoot, "cursor", "rules");
-  
-  if (!fs.existsSync(rulesDir)) {
-    return [];
+  if (fs.existsSync(rulesDir)) {
+    const ruleFiles = fs.readdirSync(rulesDir).filter((f) => f.endsWith(".mdc"));
+    if (ruleFiles.length > 0) {
+      categories.push({
+        name: "Rules",
+        items: ruleFiles.map((file) => {
+          const name = file.replace(".mdc", "");
+          return {
+            value: `cursor-${name}`,
+            label: file,
+          };
+        }),
+      });
+    }
   }
-  
-  const files = fs.readdirSync(rulesDir);
-  return files
-    .filter((file: string) => file.endsWith(".mdc"))
-    .map((file: string) => {
-      const name = file.replace(".mdc", "");
-      const key = `cursor-${name}` as TemplateKey;
-      return {
-        value: key,
-        label: name.replace(/-/g, " "),
-      };
-    })
-    .filter((item: { value: TemplateKey; label: string }) => {
-      // TEMPLATE_MAPに存在するもののみを返す
-      return TEMPLATE_MAP[item.value] !== undefined;
-    });
+
+  // Commands カテゴリ
+  const commandsDir = path.join(templateRoot, "cursor", "commands");
+  if (fs.existsSync(commandsDir)) {
+    const commandFiles = fs.readdirSync(commandsDir).filter((f) => f.endsWith(".md"));
+    if (commandFiles.length > 0) {
+      categories.push({
+        name: "Commands",
+        items: commandFiles.map((file) => {
+          const name = file.replace(".md", "");
+          return {
+            value: `cursor-command-${name}`,
+            label: file,
+          };
+        }),
+      });
+    }
+  }
+
+  // Agents カテゴリ
+  const agentsDir = path.join(templateRoot, "agents");
+  if (fs.existsSync(agentsDir)) {
+    const agentFiles = fs.readdirSync(agentsDir).filter((f) => f.endsWith(".md"));
+    if (agentFiles.length > 0) {
+      categories.push({
+        name: "Agents",
+        items: agentFiles.map((file) => {
+          const name = file.replace(".md", "");
+          return {
+            value: `agent-${name.toLowerCase()}`,
+            label: file,
+          };
+        }),
+      });
+    }
+  }
+
+  return categories;
+}
+
+// templates/cursor/rules/ディレクトリ内のルールファイルを動的に検出（後方互換性）
+export function getAvailableRules(): Array<{ value: TemplateKey; label: string }> {
+  const categories = getTemplatesByCategory();
+  const rulesCategory = categories.find((c) => c.name === "Rules");
+  return rulesCategory?.items || [];
 }
 

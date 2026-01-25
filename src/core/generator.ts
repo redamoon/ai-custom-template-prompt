@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { TEMPLATE_MAP, TemplateKey } from "./config.js";
+import { getTemplateMap, TemplateKey } from "./config.js";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,17 +44,24 @@ function getTemplateRoot() {
 const templateRoot = getTemplateRoot();
 
 export async function generate(name: TemplateKey | "all", dryRun = false) {
+  const templateMap = getTemplateMap();
+  
   if (dryRun) {
     console.log("🔍 [DRY RUN] 実行予定の操作:");
     console.log("");
   }
   
   if (name === "all") {
-    (Object.keys(TEMPLATE_MAP) as TemplateKey[]).forEach((key) => {
-      copy(TEMPLATE_MAP[key], dryRun);
+    Object.keys(templateMap).forEach((key) => {
+      copy(templateMap[key], dryRun);
     });
   } else {
-    copy(TEMPLATE_MAP[name], dryRun);
+    const template = templateMap[name];
+    if (!template) {
+      console.log(`⚠️  テンプレートが見つかりません: ${name}`);
+      return;
+    }
+    copy(template, dryRun);
   }
   
   if (dryRun) {
