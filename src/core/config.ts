@@ -68,6 +68,23 @@ export function getTemplateMap(): Record<TemplateKey, TemplateMapping> {
     }
   }
 
+  // Skills: templates/cursor/skills/*/SKILL.md (ディレクトリ単位)
+  const skillsDir = path.join(templateRoot, "cursor", "skills");
+  if (fs.existsSync(skillsDir)) {
+    const skillFolders = fs.readdirSync(skillsDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory());
+    for (const folder of skillFolders) {
+      const skillFile = path.join(skillsDir, folder.name, "SKILL.md");
+      if (fs.existsSync(skillFile)) {
+        const key = `cursor-skill-${folder.name}`;
+        map[key] = {
+          from: `cursor/skills/${folder.name}`,
+          to: `.cursor/skills/${folder.name}`,
+        };
+      }
+    }
+  }
+
   // Agents: templates/agents/*.md
   const agentsDir = path.join(templateRoot, "agents");
   if (fs.existsSync(agentsDir)) {
@@ -131,6 +148,28 @@ export function getTemplatesByCategory(): TemplateCategory[] {
           return {
             value: `cursor-command-${name}`,
             label: file,
+          };
+        }),
+      });
+    }
+  }
+
+  // Skills カテゴリ
+  const skillsDir = path.join(templateRoot, "cursor", "skills");
+  if (fs.existsSync(skillsDir)) {
+    const skillFolders = fs.readdirSync(skillsDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory());
+    const validSkills = skillFolders.filter((folder) => {
+      const skillFile = path.join(skillsDir, folder.name, "SKILL.md");
+      return fs.existsSync(skillFile);
+    });
+    if (validSkills.length > 0) {
+      categories.push({
+        name: "Skills",
+        items: validSkills.map((folder) => {
+          return {
+            value: `cursor-skill-${folder.name}`,
+            label: `${folder.name}/SKILL.md`,
           };
         }),
       });
