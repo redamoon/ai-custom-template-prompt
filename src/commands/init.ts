@@ -1,4 +1,4 @@
-import { outro, cancel, confirm, isCancel } from "@clack/prompts";
+import { outro, cancel, confirm, isCancel, multiselect, select } from "@clack/prompts";
 import { getTemplatesByCategory, TemplateKey } from "../core/config.js";
 import { generate } from "../core/generator.js";
 
@@ -20,17 +20,22 @@ export default async function init(dryRun = false) {
   console.log(ASCII_BANNER);
 
   try {
-    // すべてインストールするか確認
-    const installAll = await confirm({
-      message: "すべてのテンプレート（rules, commands, agents）を一括でインストールしますか？",
+    // インストールモードを選択
+    const mode = await select({
+      message: "インストールモードを選択してください",
+      options: [
+        { value: "all", label: "🚀 すべて一括インストール", hint: "rules, commands, skills, agents" },
+        { value: "category", label: "📁 カテゴリ単位で選択", hint: "Rules, Commands, Skills, Agents から選択" },
+        { value: "individual", label: "📋 個別に選択", hint: "テンプレートを1つずつ選択" },
+      ],
     });
 
-    if (isCancel(installAll)) {
+    if (isCancel(mode)) {
       cancel("キャンセルされました");
       return;
     }
 
-    if (installAll) {
+    if (mode === "all") {
       await generate("all", dryRun);
       if (dryRun) {
         outro("Dry run完了しました！");
@@ -40,57 +45,63 @@ export default async function init(dryRun = false) {
       return;
     }
 
-    // 個別選択モード
-    console.log("\n📋 個別選択モード\n");
-
     const templates = getTemplatesByCategory();
-    const selectedTemplates: TemplateKey[] = [];
 
-    // カテゴリごとにテンプレートを確認
-    for (const category of templates) {
-      console.log(`\n--- ${category.name} ---\n`);
+    if (mode === "category") {
+      // カテゴリ単位で選択
+      const selectedCategories = await multiselect({
+        message: "インストールするカテゴリを選択してください（スペースで選択、Enterで確定）",
+        options: templates.map((cat) => ({
+          value: cat.name,
+          label: `${getCategoryIcon(cat.name)} ${cat.name}`,
+          hint: `${cat.items.length}個のテンプレート`,
+        })),
+        required: true,
+      });
 
-      for (const template of category.items) {
-        const install = await confirm({
-          message: `[${category.name}] ${template.label} をインストールしますか？`,
-          initialValue: false,
-        });
+      if (isCancel(selectedCategories)) {
+        cancel("キャンセルされました");
+        return;
+      }
 
-        if (isCancel(install)) {
-          cancel("キャンセルされました");
-          return;
-        }
-
-        if (install) {
-          selectedTemplates.push(template.value);
+      const selectedTemplates: TemplateKey[] = [];
+      for (const category of templates) {
+        if ((selectedCategories as string[]).includes(category.name)) {
+          selectedTemplates.push(...category.items.map((item) => item.value));
         }
       }
+
+      await processTemplates(selectedTemplates, dryRun);
+      return;
     }
 
-    // 選択されていない場合の処理
+    // 個別選択モード
+    const selectedTemplates: TemplateKey[] = [];
+
+    for (const category of templates) {
+      const categoryTemplates = await multiselect({
+        message: `${getCategoryIcon(category.name)} ${category.name} からインストールするテンプレートを選択`,
+        options: category.items.map((item) => ({
+          value: item.value,
+          label: item.label,
+        })),
+        required: false,
+      });
+
+      if (isCancel(categoryTemplates)) {
+        cancel("キャンセルされました");
+        return;
+      }
+
+      selectedTemplates.push(...(categoryTemplates as TemplateKey[]));
+    }
+
     if (selectedTemplates.length === 0) {
       cancel("テンプレートが選択されませんでした");
       return;
     }
 
-    // 選択されたテンプレートを表示
-    console.log(`\n📦 選択されたテンプレート (${selectedTemplates.length}個):`);
-    selectedTemplates.forEach((template, index) => {
-      console.log(`  ${index + 1}. ${String(template)}`);
-    });
-    console.log("");
-
-    // 選択されたテンプレートを処理
-    for (const template of selectedTemplates) {
-      console.log(`\n🔧 処理中: ${template}`);
-      await generate(template, dryRun);
-    }
-
-    if (dryRun) {
-      outro("Dry run完了しました！");
-    } else {
-      outro("完了しました！");
-    }
+    await processTemplates(selectedTemplates, dryRun);
   } catch (error) {
     // Ctrl+Cなどでキャンセルされた場合
     if (error && typeof error === "object" && "message" in error) {
@@ -101,6 +112,36 @@ export default async function init(dryRun = false) {
       }
     }
     throw error;
+  }
+}
+
+function getCategoryIcon(name: string): string {
+  const icons: Record<string, string> = {
+    Rules: "📏",
+    Commands: "⚡",
+    Skills: "🎯",
+    Agents: "🤖",
+  };
+  return icons[name] || "📦";
+}
+
+async function processTemplates(selectedTemplates: TemplateKey[], dryRun: boolean) {
+  // 選択されたテンプレートを表示
+  console.log(`\n📦 選択されたテンプレート (${selectedTemplates.length}個):`);
+  selectedTemplates.forEach((template, index) => {
+    console.log(`  ${index + 1}. ${String(template)}`);
+  });
+  console.log("");
+
+  // 選択されたテンプレートを処理
+  for (const template of selectedTemplates) {
+    await generate(template, dryRun);
+  }
+
+  if (dryRun) {
+    outro("Dry run完了しました！");
+  } else {
+    outro("完了しました！");
   }
 }
 

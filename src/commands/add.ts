@@ -1,15 +1,38 @@
+import { select, isCancel, cancel, outro } from "@clack/prompts";
 import { generate } from "../core/generator.js";
-import { TEMPLATE_MAP, TemplateKey } from "../core/config.js";
+import { TEMPLATE_MAP, TemplateKey, getTemplatesByCategory } from "../core/config.js";
 
 export default async function add(args: string[]) {
   const dryRun = args.includes("--dry-run");
   const filteredArgs = args.filter((arg) => arg !== "--dry-run");
-  const key = filteredArgs[0] as TemplateKey;
+  let key = filteredArgs[0] as TemplateKey;
 
+  // 引数がない場合は対話式で選択
   if (!key) {
-    console.error("Error: テンプレート名を指定してください");
-    console.error("使用可能なテンプレート:", Object.keys(TEMPLATE_MAP).join(", "));
-    return;
+    const templates = getTemplatesByCategory();
+    const allOptions: Array<{ value: string; label: string; hint?: string }> = [];
+
+    for (const category of templates) {
+      for (const item of category.items) {
+        allOptions.push({
+          value: item.value,
+          label: item.label,
+          hint: category.name,
+        });
+      }
+    }
+
+    const selected = await select({
+      message: "追加するテンプレートを選択してください",
+      options: allOptions,
+    });
+
+    if (isCancel(selected)) {
+      cancel("キャンセルされました");
+      return;
+    }
+
+    key = selected as TemplateKey;
   }
 
   if (!TEMPLATE_MAP[key]) {
@@ -20,7 +43,7 @@ export default async function add(args: string[]) {
 
   await generate(key, dryRun);
   if (!dryRun) {
-    console.log(`✔ added: ${key}`);
+    outro(`✔ added: ${key}`);
   }
 }
 
