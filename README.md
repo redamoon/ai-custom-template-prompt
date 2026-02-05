@@ -19,8 +19,10 @@ npx ai-custom-template-prompt release patch
 - ✅ **Cursorルール**: コード品質、テスト、コーディング規約のルール定義
 - ✅ **ネストされたルール**: ディレクトリ別にルールを適用（backend/frontend/server）
 - ✅ **Cursorコマンド**: `/`で呼び出せる再利用可能なワークフロー（PR作成、ブランチ作成など）
+- ✅ **Cursorスキル**: 再利用可能なスキルテンプレート（textlintセットアップ、Zenn執筆など）
 - ✅ **自動適用**: ファイルタイプやディレクトリに応じて自動的にルールを適用
 - ✅ **Manualルール**: `@ruleName`で明示的に指定して使用
+- ✅ **対話式インストール**: 3つのモード（一括/カテゴリ/個別）から選択可能
 
 ## インストール
 
@@ -86,21 +88,35 @@ ai-custom-template-prompt init
 
 # または npxで実行
 npx ai-custom-template-prompt init
+
+# dry-runモード（実際のファイル操作なしで確認）
+npx ai-custom-template-prompt init --dry-run
 ```
 
-対話式でテンプレートを選択してセットアップできます。
+対話式で3つのインストールモードから選択できます。
+
+- 🚀 **すべて一括インストール** - rules, commands, skills, agentsを全てインストール
+- 📁 **カテゴリ単位で選択** - Rules, Commands, Skills, Agentsからマルチ選択
+- 📋 **個別に選択** - 各カテゴリ内でテンプレートをマルチ選択
 
 ### テンプレートを追加
 
 ```bash
-# インストール済みの場合
-ai-custom-template-prompt add cursor-rules
+# 対話式で選択（引数なし）
+ai-custom-template-prompt add
+npx ai-custom-template-prompt add
 
-# または npxで実行
+# 直接指定
+ai-custom-template-prompt add cursor-rules
 npx ai-custom-template-prompt add cursor-rules
+
+# dry-runモード
+npx ai-custom-template-prompt add --dry-run
 ```
 
 **利用可能なテンプレート名:**
+
+**Rules（ルール）**
 - `cursor-rules` - Cursor用基本ルールファイル（常に適用）
 - `cursor-manual-rules` - Manualルール（@manual-rulesで明示的に指定）
 - `cursor-test-rules` - テストファイル用ルール（自動適用）
@@ -108,12 +124,20 @@ npx ai-custom-template-prompt add cursor-rules
 - `cursor-backend-rules` - バックエンド用ルール（ネスト: `backend/.cursor/rules/`）
 - `cursor-frontend-rules` - フロントエンド用ルール（ネスト: `frontend/.cursor/rules/`）
 - `cursor-server-rules` - サーバー用ルール（ネスト: `backend/server/.cursor/rules/`）
-- `cursor-commands` - Cursorコマンドディレクトリ全体（`/`で呼び出し可能）
+- `cursor-writing` - 日本語執筆ルール
+
+**Commands（コマンド）**
 - `cursor-command-create-pr` - PR作成コマンド
 - `cursor-command-create-branch` - ブランチ作成コマンド
 - `cursor-command-update-readme` - README更新コマンド
 - `cursor-command-release` - リリースコマンド
-- `agents` - Agents設定ファイル
+
+**Skills（スキル）**
+- `cursor-skill-textlint-setup` - textlintセットアップスキル（AI文章検出ルール対応）
+- `cursor-skill-zenn-blog-writing` - Zenn技術ブログ執筆スキル
+
+**Agents**
+- `agent-agents` - Agents設定ファイル
 
 ### テンプレート一覧を表示
 
@@ -156,8 +180,25 @@ npx ai-custom-template-prompt doctor
 
 - `.cursor/commands/create-pr.md` - PR作成コマンド（`/create-pr`で呼び出し）
 - `.cursor/commands/create-branch.md` - ブランチ作成コマンド（`/create-branch`で呼び出し）
+- `.cursor/commands/update-readme.md` - README更新コマンド（`/update-readme`で呼び出し）
+- `.cursor/commands/release.md` - リリースコマンド（`/release`で呼び出し）
 
 コマンドはチャット入力欄で `/` を入力すると自動的に表示され、ワークフローを標準化できます。
+
+### Cursorスキル
+
+- `.cursor/skills/textlint-setup/SKILL.md` - textlintセットアップスキル
+  - textlintのインストール手順
+  - `@textlint-ja/textlint-rule-preset-ai-writing` の設定
+  - AI文章検出ルールの設定
+
+- `.cursor/skills/zenn-blog-writing/SKILL.md` - Zenn技術ブログ執筆スキル
+  - フロントマターの書き方
+  - 文章品質の基準
+  - AIっぽい文章の排除ガイドライン
+  - レビュー時のチェックリスト
+
+スキルはCursorが自動的に検出し、関連するタスクで活用されます。
 
 ### その他のテンプレート
 
@@ -257,18 +298,26 @@ pnpm dev <command>
 
 ### Cursorルール
 
-- `templates/cursor/rules.mdc` - 基本ルール（コード品質、テスト、コーディング規約）
-- `templates/cursor/manual-rules.mdc` - Manualルール（高度なパターン）
-- `templates/cursor/test-rules.mdc` - テストファイル用ルール
-- `templates/cursor/api-rules.mdc` - API関連コード用ルール
-- `templates/cursor/backend-rules.mdc` - バックエンド用ルール
-- `templates/cursor/frontend-rules.mdc` - フロントエンド用ルール
-- `templates/cursor/server-rules.mdc` - サーバー用ルール
+- `templates/cursor/rules/rules.mdc` - 基本ルール（コード品質、テスト、コーディング規約）
+- `templates/cursor/rules/manual-rules.mdc` - Manualルール（高度なパターン）
+- `templates/cursor/rules/test-rules.mdc` - テストファイル用ルール
+- `templates/cursor/rules/api-rules.mdc` - API関連コード用ルール
+- `templates/cursor/rules/backend-rules.mdc` - バックエンド用ルール
+- `templates/cursor/rules/frontend-rules.mdc` - フロントエンド用ルール
+- `templates/cursor/rules/server-rules.mdc` - サーバー用ルール
+- `templates/cursor/rules/writing.mdc` - 日本語執筆ルール
 
 ### Cursorコマンド
 
 - `templates/cursor/commands/create-pr.md` - PR作成コマンド
 - `templates/cursor/commands/create-branch.md` - ブランチ作成コマンド
+- `templates/cursor/commands/update-readme.md` - README更新コマンド
+- `templates/cursor/commands/release.md` - リリースコマンド
+
+### Cursorスキル
+
+- `templates/cursor/skills/textlint-setup/SKILL.md` - textlintセットアップスキル
+- `templates/cursor/skills/zenn-blog-writing/SKILL.md` - Zenn技術ブログ執筆スキル
 
 ### その他のテンプレート
 
