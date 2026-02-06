@@ -134,7 +134,11 @@ npx ai-custom-template-prompt add --dry-run
 
 **Skills（スキル）**
 - `cursor-skill-textlint-setup` - textlintセットアップスキル（AI文章検出ルール対応）
+- `cursor-skill-textlint-blog` - ブログ記事用textlintチェックスキル（任意フォルダ対応）
 - `cursor-skill-zenn-blog-writing` - Zenn技術ブログ執筆スキル
+- `cursor-skill-hatena-blog-markdown` - はてなブログMarkdown記法スキル（任意フォルダ対応）
+- `cursor-skill-hatena-syntax-highlight` - はてなブログシンタックスハイライトスキル（任意フォルダ対応）
+- `cursor-skill-refactoring-legacy-code` - レガシーコードリファクタリングスキル
 
 **Agents**
 - `agent-agents` - Agents設定ファイル
@@ -192,11 +196,31 @@ npx ai-custom-template-prompt doctor
   - `@textlint-ja/textlint-rule-preset-ai-writing` の設定
   - AI文章検出ルールの設定
 
+- `.cursor/skills/textlint-blog/SKILL.md` - ブログ記事用textlintチェックスキル
+  - 任意フォルダ内のMarkdownファイルをチェック
+  - 技術文書の品質向上
+  - AI生成テキスト特有の表現を検出・修正
+
 - `.cursor/skills/zenn-blog-writing/SKILL.md` - Zenn技術ブログ執筆スキル
   - フロントマターの書き方
   - 文章品質の基準
   - AIっぽい文章の排除ガイドライン
   - レビュー時のチェックリスト
+
+- `.cursor/skills/hatena-blog-markdown/SKILL.md` - はてなブログMarkdown記法スキル
+  - 見出しはh3から始めるルール
+  - はてな独自の記法（目次、フォトライフ、TeX数式など）
+  - 任意フォルダに対応
+
+- `.cursor/skills/hatena-syntax-highlight/SKILL.md` - はてなブログシンタックスハイライトスキル
+  - コードブロックのシンタックスハイライト記法
+  - 500以上の言語に対応
+  - 任意フォルダに対応
+
+- `.cursor/skills/refactoring-legacy-code/SKILL.md` - レガシーコードリファクタリングスキル
+  - レガシーコードの分析とリファクタリング戦略
+  - 段階的な改善アプローチ
+  - テスト駆動リファクタリング
 
 スキルはCursorが自動的に検出し、関連するタスクで活用されます。
 
@@ -317,7 +341,11 @@ pnpm dev <command>
 ### Cursorスキル
 
 - `templates/cursor/skills/textlint-setup/SKILL.md` - textlintセットアップスキル
+- `templates/cursor/skills/textlint-blog/SKILL.md` - ブログ記事用textlintチェックスキル
 - `templates/cursor/skills/zenn-blog-writing/SKILL.md` - Zenn技術ブログ執筆スキル
+- `templates/cursor/skills/hatena-blog-markdown/SKILL.md` - はてなブログMarkdown記法スキル
+- `templates/cursor/skills/hatena-syntax-highlight/SKILL.md` - はてなブログシンタックスハイライトスキル
+- `templates/cursor/skills/refactoring-legacy-code/SKILL.md` - レガシーコードリファクタリングスキル
 
 ### その他のテンプレート
 
