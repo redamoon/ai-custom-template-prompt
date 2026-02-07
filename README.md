@@ -139,6 +139,7 @@ npx ai-custom-template-prompt add --dry-run
 - `cursor-skill-hatena-blog-markdown` - はてなブログMarkdown記法スキル（任意フォルダ対応）
 - `cursor-skill-hatena-syntax-highlight` - はてなブログシンタックスハイライトスキル（任意フォルダ対応）
 - `cursor-skill-refactoring-legacy-code` - レガシーコードリファクタリングスキル
+- `cursor-skill-sql-antipatterns` - SQLアンチパターン検出・修正スキル（第2版準拠）
 
 **Agents**
 - `agent-agents` - Agents設定ファイル
@@ -221,6 +222,13 @@ npx ai-custom-template-prompt doctor
   - レガシーコードの分析とリファクタリング戦略
   - 段階的な改善アプローチ
   - テスト駆動リファクタリング
+
+- `.cursor/skills/sql-antipatterns/SKILL.md` - SQLアンチパターン検出・修正スキル
+  - SQLアンチパターン第2版（Bill Karwin著、和田卓人監訳）準拠
+  - データベース論理設計・物理設計のアンチパターン検出
+  - クエリ・アプリケーション開発のアンチパターン検出
+  - ミニ・アンチパターン一覧（15個）
+  - レビュー時のチェックリスト
 
 スキルはCursorが自動的に検出し、関連するタスクで活用されます。
 
@@ -346,6 +354,7 @@ pnpm dev <command>
 - `templates/cursor/skills/hatena-blog-markdown/SKILL.md` - はてなブログMarkdown記法スキル
 - `templates/cursor/skills/hatena-syntax-highlight/SKILL.md` - はてなブログシンタックスハイライトスキル
 - `templates/cursor/skills/refactoring-legacy-code/SKILL.md` - レガシーコードリファクタリングスキル
+- `templates/cursor/skills/sql-antipatterns/SKILL.md` - SQLアンチパターン検出・修正スキル
 
 ### その他のテンプレート
 
