@@ -11,7 +11,14 @@ function getTemplateRoot() {
     return cwdTemplatesPath;
   }
 
-  // フォールバック: 相対パスで探す
+  // フォールバック: パッケージルートからの相対パスで探す
+  // __dirname は dist/src/core/ なので、3階層上がパッケージルート
+  const packageRootPath = path.join(__dirname, "..", "..", "..", "templates");
+  if (fs.existsSync(packageRootPath)) {
+    return packageRootPath;
+  }
+
+  // さらにフォールバック: 2階層上（開発時のsrc/core/からの参照）
   const fallbackPath = path.join(__dirname, "..", "..", "templates");
   if (fs.existsSync(fallbackPath)) {
     return fallbackPath;
